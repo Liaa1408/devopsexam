@@ -2,18 +2,51 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                echo 'Building Week9 application...'
+                checkout scm
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Testing application...'
+                sh 'docker build -t suhithasv/kubedemoapp:latest .'
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_TOKEN'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_TOKEN" | docker login \
+                        -u "$DOCKER_USER" --password-stdin
+                        docker push YOUR_DOCKERHUB_USERNAME/kubedemoapp:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
+                sh 'kubectl rollout status deployment/kubedemoapp-deployment --timeout=120s'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Application deployed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the console output.'
+        }
     }
 }
