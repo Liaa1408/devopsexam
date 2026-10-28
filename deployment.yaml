@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: kubedemoapp-deployment
+
+spec:
+  replicas: 4
+
+  selector:
+    matchLabels:
+      app: kubedemoapp
+
+  template:
+    metadata:
+      labels:
+        app: kubedemoapp
+
+    spec:
+      containers:
+        - name: kubedemoapp
+          image: suhithasv/week9:latest
+          ports:
+            - containerPort: 5001
