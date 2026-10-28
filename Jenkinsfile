@@ -30,7 +30,7 @@ pipeline {
                     sh '''
                         echo "$DOCKER_TOKEN" | docker login \
                         -u "$DOCKER_USER" --password-stdin
-                        docker push YOUR_DOCKERHUB_USERNAME/kubedemoapp:latest
+                        docker push suhithasv/kubedemoapp:latest
                     '''
                 }
             }
