@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
         - name: kubedemoapp
-          image: suhithasv/week9:latest
+          image: suhithasv/kubedemoapp:latest
           ports:
             - containerPort: 5001
